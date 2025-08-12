@@ -233,7 +233,7 @@ const EnhancedIndex = () => {
               </Select>
             </div>
 
-            <div className="rounded-md border border-border/50 bg-background/60 max-h-[65vh] overflow-y-auto">
+            <div className="rounded-md border border-border/50 bg-background/60 max-h-[55vh] overflow-y-auto">
               <ul className="divide-y divide-border/50">
                 {filteredCameras.map((camera) => (
                   <li key={camera.id}>

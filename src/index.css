@@ -116,6 +116,26 @@ All colors MUST be HSL.
   }
 }
 
+/* Scrollbar lebih kecil dan abu-abu */
+::-webkit-scrollbar {
+  width: 3px;       /* lebar scrollbar */
+  height: 3px;      /* untuk horizontal */
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;  /* warna track (latar belakang) */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #787676; /* warna handle */
+  border-radius: 3px;        /* biar agak rounded */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #888; /* warna pas dihover */
+}
+
+
 @layer base {
   * {
     @apply border-border;

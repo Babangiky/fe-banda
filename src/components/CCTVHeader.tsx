@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Shield, Settings, Monitor, LogOut } from 'lucide-react';
+import { Shield, Settings, Monitor, LogOut, LogIn } from 'lucide-react';
 import ThemeToggle from '@/components/ThemeToggle';
 interface CCTVHeaderProps {
   onAdminClick?: () => void;
@@ -43,7 +43,7 @@ const CCTVHeader: React.FC<CCTVHeaderProps> = ({
                 <LogOut className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-2" />
                 <span className="hidden sm:inline">Keluar</span>
               </Button> : showAdmin && <Button variant="outline" size="sm" onClick={onAdminClick} className="border-primary/20 hover:border-primary hover:bg-primary/90  text-xs sm:text-sm px-2 sm:px-3">
-                <Settings className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-2" />
+                <LogIn className="w-3 h-3 sm:w-4 sm:h-4 sm:mr-2" />
                 <span className="hidden sm:inline">Admin</span>
               </Button>}
           </div>

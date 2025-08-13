@@ -1,16 +1,19 @@
+import React, { useEffect, useRef } from "react";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+import { Card } from "@/components/ui/card";
+import "leaflet.markercluster";
+import "leaflet.markercluster/dist/MarkerCluster.Default.css";
+import "leaflet.markercluster/dist/MarkerCluster.css";
 
-import React, { useEffect, useRef } from 'react';
-import L from 'leaflet';
-import 'leaflet/dist/leaflet.css';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-
-// Fix for default markers
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+  iconRetinaUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
+  iconUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
+  shadowUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
 });
 
 interface CCTVCamera {
@@ -19,7 +22,7 @@ interface CCTVCamera {
   location: string;
   coordinates: [number, number];
   streamUrl: string;
-  status: 'online' | 'offline';
+  status: "online" | "offline";
 }
 
 interface CCTVMapProps {
@@ -30,18 +33,18 @@ interface CCTVMapProps {
   onMapClick?: (coordinates: [number, number]) => void;
   unstyled?: boolean;
   containerClassName?: string;
-  mapStyle?: 'streets' | 'satellite' | 'light';
+  mapStyle?: "streets" | "satellite" | "google";
 }
 
-const CCTVMap: React.FC<CCTVMapProps> = ({ 
-  cameras, 
-  onCameraSelect, 
-  selectedCamera, 
+const CCTVMap: React.FC<CCTVMapProps> = ({
+  cameras,
+  onCameraSelect,
+  selectedCamera,
   isAdmin = false,
   onMapClick,
   unstyled = false,
   containerClassName,
-  mapStyle = 'streets'
+  mapStyle = "streets",
 }) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<L.Map | null>(null);
@@ -52,9 +55,9 @@ const CCTVMap: React.FC<CCTVMapProps> = ({
   const smoothScrollToSection = (sectionId: string) => {
     const section = document.getElementById(sectionId);
     if (section) {
-      section.scrollIntoView({ 
-        behavior: 'smooth',
-        block: 'start'
+      section.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
       });
     }
   };
@@ -64,11 +67,10 @@ const CCTVMap: React.FC<CCTVMapProps> = ({
 
     map.current = L.map(mapContainer.current, {
       zoomControl: false,
-      attributionControl: false
+      attributionControl: false,
     }).setView([5.5526, 95.3162], 12);
 
-
-    const style = document.createElement('style');
+    const style = document.createElement("style");
     style.textContent = `
       .leaflet-popup-content-wrapper {
         background: hsl(220 13% 11%);
@@ -136,18 +138,15 @@ const CCTVMap: React.FC<CCTVMapProps> = ({
     `;
     document.head.appendChild(style);
 
-    // Add map click handler for admin
     if (isAdmin && onMapClick) {
-      map.current.on('click', (e) => {
+      map.current.on("click", (e) => {
         const { lat, lng } = e.latlng;
         onMapClick([lng, lat]);
-        
-        // Remove previous temp marker
+
         if (tempMarker.current) {
           tempMarker.current.remove();
         }
-        
-        // Add temporary marker
+
         const tempIcon = L.divIcon({
           html: `
             <div style="
@@ -170,14 +169,15 @@ const CCTVMap: React.FC<CCTVMapProps> = ({
               "></div>
             </div>
           `,
-          className: '',
+          className: "",
           iconSize: [24, 24],
-          iconAnchor: [12, 12]
+          iconAnchor: [12, 12],
         });
-        
+
         tempMarker.current = L.marker([lat, lng], { icon: tempIcon })
           .addTo(map.current!)
-          .bindPopup(`
+          .bindPopup(
+            `
             <div class="camera-popup">
               <h3 style="margin: 0 0 8px 0; font-weight: 600; color: hsl(47 96% 53%);">📍 Lokasi Baru</h3>
               <p style="margin: 0; font-size: 12px; color: hsl(215 16% 65%);">
@@ -185,7 +185,8 @@ const CCTVMap: React.FC<CCTVMapProps> = ({
                 Lng: ${lng.toFixed(6)}
               </p>
             </div>
-          `)
+          `
+          )
           .openPopup();
       });
     }
@@ -198,31 +199,37 @@ const CCTVMap: React.FC<CCTVMapProps> = ({
     };
   }, [isAdmin, onMapClick]);
 
-  // Update base tile layer when mapStyle changes
   useEffect(() => {
     if (!map.current) return;
-    // Remove previous layer
     if (baseLayer.current) {
       map.current.removeLayer(baseLayer.current);
     }
 
     let layer: L.TileLayer;
-    if (mapStyle === 'satellite') {
-      layer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-        attribution: 'Tiles &copy; Esri &mdash; Source: Esri, Earthstar Geographics',
-        maxZoom: 19
-      });
-    } else if (mapStyle === 'light') {
-      layer = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; OpenStreetMap contributors &copy; CARTO',
-        subdomains: 'abcd',
-        maxZoom: 19
-      });
+    if (mapStyle === "satellite") {
+      layer = L.tileLayer(
+        "http://{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}",
+        {
+          maxZoom: 20,
+          subdomains: ["mt0", "mt1", "mt2", "mt3"],
+        }
+      );
+    } else if (mapStyle === "google") {
+      layer = L.tileLayer(
+        "http://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}", 
+        {
+          maxZoom: 20,
+          subdomains: ["mt0", "mt1", "mt2", "mt3"],
+        }
+      );
     } else {
-      layer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors',
-        maxZoom: 19
-      });
+      layer = L.tileLayer(
+        "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", 
+        {
+          attribution: "&copy; OpenStreetMap contributors",
+          maxZoom: 19,
+        }
+      );
     }
 
     baseLayer.current = layer.addTo(map.current);
@@ -231,15 +238,17 @@ const CCTVMap: React.FC<CCTVMapProps> = ({
   useEffect(() => {
     if (!map.current) return;
 
-    // Clear existing markers
-    markers.current.forEach(marker => marker.remove());
+    markers.current.forEach((marker) => marker.remove());
     markers.current = [];
-
-    // Add markers for each camera
+    const markerClusterGroup = L.markerClusterGroup({
+      showCoverageOnHover: false,
+      spiderfyOnMaxZoom: true,
+      zoomToBoundsOnClick: true,
+    });
     cameras.forEach((camera) => {
-      const isOnline = camera.status === 'online';
-      const color = isOnline ? 'hsl(142 76% 36%)' : 'hsl(0 84% 60%)';
-      
+      const isOnline = camera.status === "online";
+      const color = isOnline ? "hsl(142 76% 36%)" : "hsl(0 84% 60%)";
+
       const iconHtml = `
         <div style="
           width: 22px;
@@ -252,14 +261,16 @@ const CCTVMap: React.FC<CCTVMapProps> = ({
           align-items: center;
           justify-content: center;
           position: relative;
-        " class="${isOnline ? 'custom-marker' : ''}">
+        " class="${isOnline ? "custom-marker" : ""}">
           <div style="
             width: 6px;
             height: 6px;
             border-radius: 50%;
             background: white;
           "></div>
-          ${isOnline ? `
+          ${
+            isOnline
+              ? `
             <div style="
               position: absolute;
               top: -2px;
@@ -270,21 +281,25 @@ const CCTVMap: React.FC<CCTVMapProps> = ({
               border-radius: 50%;
               border: 1px solid white;
             "></div>
-          ` : ''}
+          `
+              : ""
+          }
         </div>
       `;
 
       const icon = L.divIcon({
         html: iconHtml,
-        className: '',
+        className: "",
         iconSize: [22, 22],
         iconAnchor: [11, 11],
-        popupAnchor: [0, -15]
+        popupAnchor: [0, -15],
       });
 
       const popupContent = `
         <div class="camera-popup">
-          <h3 style="margin: 0 0 8px 0; font-weight: 600; font-size: 14px;">${camera.name}</h3>
+          <h3 style="margin: 0 0 8px 0; font-weight: 600; font-size: 14px;">${
+            camera.name
+          }</h3>
           <p style="margin: 0 0 8px 0; color: hsl(215 16% 65%); font-size: 12px;">
             📍 ${camera.location}
           </p>
@@ -293,69 +308,69 @@ const CCTVMap: React.FC<CCTVMapProps> = ({
               width: 8px; 
               height: 8px; 
               border-radius: 50%; 
-              background: ${isOnline ? 'hsl(142 76% 36%)' : 'hsl(0 84% 60%)'};
+              background: ${isOnline ? "hsl(142 76% 36%)" : "hsl(0 84% 60%)"};
             "></div>
             <span style="
               font-size: 12px; 
               font-weight: 500;
               text-transform: capitalize;
-              color: ${isOnline ? 'hsl(142 76% 36%)' : 'hsl(0 84% 60%)'};
+              color: ${isOnline ? "hsl(142 76% 36%)" : "hsl(0 84% 60%)"};
             ">
               ${camera.status}
             </span>
           </div>
-          ${isOnline ? `
+          ${
+            isOnline
+              ? `
             <button 
               onclick="window.selectCameraAndScroll && window.selectCameraAndScroll('${camera.id}')" 
               class="popup-button"
             >
               🎥 Lihat Stream
             </button>
-          ` : `
+          `
+              : `
             <button class="popup-button" disabled>
               📵 Kamera Offline
             </button>
-          `}
+          `
+          }
         </div>
       `;
 
-      const marker = L.marker([camera.coordinates[1], camera.coordinates[0]], { icon })
-        .addTo(map.current!)
+      const marker = L.marker([camera.coordinates[1], camera.coordinates[0]], {
+        icon,
+      })
         .bindPopup(popupContent, {
           maxWidth: 250,
-          className: 'custom-popup'
+          className: "custom-popup",
         });
 
-      marker.on('click', () => {
+      marker.on("click", () => {
         if (onCameraSelect) {
           onCameraSelect(camera);
-          // Smooth scroll to camera detail after a short delay
           setTimeout(() => {
-            smoothScrollToSection('camera-detail');
+            smoothScrollToSection("camera-detail");
           }, 300);
         }
       });
 
       markers.current.push(marker);
+      markerClusterGroup.addLayer(marker);
     });
-
-    // Global callback for popup buttons
+    map.current.addLayer(markerClusterGroup);
     (window as any).selectCameraAndScroll = (cameraId: string) => {
-      const camera = cameras.find(c => c.id === cameraId);
+      const camera = cameras.find((c) => c.id === cameraId);
       if (camera && onCameraSelect) {
         onCameraSelect(camera);
-        // Close all popups
         map.current?.closePopup();
-        // Smooth scroll to detail section
         setTimeout(() => {
-          smoothScrollToSection('camera-detail');
+          smoothScrollToSection("camera-detail");
         }, 100);
       }
     };
-
   }, [cameras, onCameraSelect]);
 
-  // Remove temp marker when not in admin mode
   useEffect(() => {
     if (!isAdmin && tempMarker.current) {
       tempMarker.current.remove();
@@ -363,28 +378,26 @@ const CCTVMap: React.FC<CCTVMapProps> = ({
     }
   }, [isAdmin]);
 
-  return (
-    unstyled ? (
-      <div 
-        ref={mapContainer} 
-        className={containerClassName ? containerClassName : "w-full h-full"}
+  return unstyled ? (
+    <div
+      ref={mapContainer}
+      className={containerClassName ? containerClassName : "w-full h-full"}
+    />
+  ) : (
+    <Card className="p-0 bg-surveillance-gray border-border/50 overflow-hidden">
+      <div
+        ref={mapContainer}
+        className="w-full h-64 sm:h-80 md:h-96 rounded-lg"
+        style={{ minHeight: "300px" }}
       />
-    ) : (
-      <Card className="p-0 bg-surveillance-gray border-border/50 overflow-hidden">
-        <div 
-          ref={mapContainer} 
-          className="w-full h-64 sm:h-80 md:h-96 rounded-lg"
-          style={{ minHeight: '300px' }}
-        />
-        {isAdmin && (
-          <div className="p-3 bg-background/50 border-t border-border/50">
-            <p className="text-xs text-muted-foreground text-center">
-              💡 Klik pada peta untuk menambah lokasi kamera baru
-            </p>
-          </div>
-        )}
-      </Card>
-    )
+      {isAdmin && (
+        <div className="p-3 bg-background/50 border-t border-border/50">
+          <p className="text-xs text-muted-foreground text-center">
+            💡 Klik pada peta untuk menambah lokasi kamera baru
+          </p>
+        </div>
+      )}
+    </Card>
   );
 };
 

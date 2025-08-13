@@ -38,9 +38,10 @@ const EnhancedIndex = () => {
   const [isMobile, setIsMobile] = useState(false);
   const [search, setSearch] = useState("");
   const [isFocus, setIsFocus] = useState(false);
-  const [mapStyle, setMapStyle] = useState<"streets" | "satellite">(
-    "satellite"
+  const [mapStyle, setMapStyle] = useState<"satellite" | "google" | "streets">(
+    "streets"
   );
+
   const navigate = useNavigate();
 
   const [cameras, setCameras] = useState<Camera[]>([]);
@@ -220,15 +221,15 @@ const EnhancedIndex = () => {
               </label>
               <Select
                 value={mapStyle}
-                onValueChange={(v) => setMapStyle(v as "streets" | "satellite")}
+                onValueChange={(v) => setMapStyle(v as "streets" | "satellite" | "google")}
               >
                 <SelectTrigger className="h-9">
                   <SelectValue placeholder="Pilih mode peta" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="streets">Jalan (Default)</SelectItem>
-                  <SelectItem value="satellite">Satelit</SelectItem>
-                  <SelectItem value="light">Terang (Positron)</SelectItem>
+                  <SelectItem value="satellite">Google Satelit</SelectItem>
+                  <SelectItem value="google">Google Street</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -295,7 +296,7 @@ const EnhancedIndex = () => {
                   <Select
                     value={mapStyle}
                     onValueChange={(v) =>
-                      setMapStyle(v as "streets" | "satellite")
+                      setMapStyle(v as "streets" | "satellite" | "google" )
                     }
                   >
                     <SelectTrigger className="h-9">
@@ -303,7 +304,8 @@ const EnhancedIndex = () => {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="streets">Jalan (Default)</SelectItem>
-                      <SelectItem value="satellite">Satelit</SelectItem>
+                      <SelectItem value="satellite">Google Satelit</SelectItem>
+                      <SelectItem value="google">Google Street</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
